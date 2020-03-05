@@ -1,0 +1,330 @@
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+# Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+# http:
+  base_url: !secret duck_dns_address
+  ssl_certificate: /ssl/fullchain.pem
+  ssl_key: /ssl/privkey.pem    
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+mqtt:
+  broker: !secret mqtt_broker_ip
+  port: !secret mqtt_broker_port
+  username: !secret mqtt_broker_user
+  password: !secret mqtt_broker_password
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+
+
+#LG 49UJ6565 WEBOS 3.8.0
+webostv:
+  host: !secret tvroom_ip
+  name: TVSala
+  turn_on_action:
+    service: wake_on_lan.send_magic_packet
+    data:
+      "mac": !secret tvroom_mac
+  #standby_connection: true
+  customize:
+    sources:
+      - livetv
+      - youtube
+      - hdmi1
+      - netflix
+
+media_player:
+
+notify:
+
+#media_player:
+#LG 49UJ6565 WEBOS 3.8.0
+#  - platform: webostv
+#    host: !secret tvroom_ip
+#    name: TV Sala
+#    
+#SAMSUNG EH5300
+#wake_on_lan: # enables `wake_on_lan` domain
+#  - platform: samsungtv
+#    host: !secret tvbedroom_ip
+#    port: 55000
+#    mac: !secret tvbedroom_mac
+#    name: TV Quarto
+
+light:
+    #Sonoff Dining Room
+  - platform: mqtt
+    name: "Spots Copa"
+    availability_topic: "homeassistant/light/diningroom/LWT"
+    command_topic: "homeassistant/light/diningroom/cmnd/POWER"
+    state_topic: "homeassistant/light/diningroom/RESULT" 
+    state_value_template: "{{value_json.POWER}}"
+    payload_on: "ON"
+    payload_off: "OFF"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    qos: 1
+
+    #MAGIC HOME RGBW Strip
+  - platform: mqtt
+    name: "Fita Led Quarto"
+    availability_topic: "homeassistant/light/rgbw/bedroom/LWT"
+    command_topic: "homeassistant/light/rgbw/bedroom/cmnd/POWER"
+    state_topic: "homeassistant/light/rgbw/bedroom/RESULT"  
+    state_value_template: "{{value_json.POWER}}"
+    brightness_command_topic: "homeassistant/light/rgbw/bedroom/cmnd/Dimmer"
+    brightness_state_topic: "homeassistant/light/rgbw/bedroom/RESULT"
+    brightness_value_template: "{{value_json.Dimmer}}"
+    brightness_scale: 100
+    rgb_command_topic: "homeassistant/light/rgbw/bedroom/cmnd/Color2"
+    rgb_state_topic: "homeassistant/light/rgbw/bedroom/RESULT"
+    rgb_value_template: "{% set red = (value_json.Color.split(',')[0] | round(0)) %}{% set green = (value_json.Color.split(',')[1] | round(0)) %}{% set blue = (value_json.Color.split(',')[2] | round(0)) %}{% set white = (value_json.Color.split(',')[3] | round(0)) %}{{ red + white }},{{ green + white }},{{ blue + white }}"
+    rgb_command_template: "{% set white = ([red,green,blue]|min) %}{{ red - white }},{{ green - white }},{{ blue - white }},{{ white }}"
+    payload_on: "ON"
+    payload_off: "OFF"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    qos: 1
+    effect_command_topic: "homeassistant/light/rgbw/bedroom/cmnd/Scheme"
+    effect_state_topic: "homeassistant/light/rgbw/bedroom/RESULT"
+    effect_value_template: "{{value_json.Scheme}}"
+    effect_list:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+  
+  - platform: mqtt
+    name: "Fita Led Sala"
+    availability_topic: "homeassistant/light/rgbw/tvroom/LWT"
+    command_topic: "homeassistant/light/rgbw/tvroom/cmnd/POWER"
+    state_topic: "homeassistant/light/rgbw/tvroom/RESULT"  
+    state_value_template: "{{value_json.POWER}}"
+    brightness_command_topic: "homeassistant/light/rgbw/tvroom/cmnd/Dimmer"
+    brightness_state_topic: "homeassistant/light/rgbw/tvroom/RESULT"
+    brightness_value_template: "{{value_json.Dimmer}}"
+    brightness_scale: 100
+    rgb_command_topic: "homeassistant/light/rgbw/tvroom/cmnd/Color2"
+    rgb_state_topic: "homeassistant/light/rgbw/tvroom/RESULT"
+    rgb_value_template: "{% set red = (value_json.Color.split(',')[0] | round(0)) %}{% set green = (value_json.Color.split(',')[1] | round(0)) %}{% set blue = (value_json.Color.split(',')[2] | round(0)) %}{% set white = (value_json.Color.split(',')[3] | round(0)) %}{{ red + white }},{{ green + white }},{{ blue + white }}"
+    rgb_command_template: "{% set white = ([red,green,blue]|min) %}{{ red - white }},{{ green - white }},{{ blue - white }},{{ white }}"
+    payload_on: "ON"
+    payload_off: "OFF"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    qos: 1
+    effect_command_topic: "homeassistant/light/rgbw/tvroom/cmnd/Scheme"
+    effect_state_topic: "homeassistant/light/rgbw/tvroom/RESULT"
+    effect_value_template: "{{value_json.Scheme}}"
+    effect_list:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+
+# Guestroom
+
+# LimitlessLed
+  - platform: limitlessled
+    bridges:
+    - host: !secret light_limitlessled_ip
+      version: 6
+      port: 5987 
+      groups:
+      - number: 1
+        type: rgbw
+        name: Spots Quintal
+      #- number: 2
+      #  type: rgbww
+      #  name: Dining
+      #- number: 3
+      #  type: rgbww
+      #  name: Office
+      #- number: 4
+      #  type: rgbww
+      #  name: Spots
+      - number: 1
+        type: bridge-led
+        name: iBox1 Wifi Bridge
+
+switch:
+    #Sonoff PowerPlug TV room
+  - platform: mqtt
+    name: "Tomada TV Sala"
+    availability_topic: "homeassistant/powerplug/tvroom/LWT"
+    command_topic: "homeassistant/powerplug/tvroom/cmnd/Backlog"
+    state_topic: "homeassistant/powerplug/tvroom/RESULT" 
+    value_template: "{{value_json.POWER2}}"
+    payload_on: "Power1 ON; Power2 ON"
+    payload_off: "Power1 OFF; Power2 OFF"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    qos: 1
+    retain: true
+
+    #Sonoff PowerPlug TV bed room
+  - platform: mqtt
+    name: "Tomada TV Quarto"
+    availability_topic: "homeassistant/powerplug/tvbedroom/LWT"
+    command_topic: "homeassistant/powerplug/tvbedroom/cmnd/Backlog"
+    state_topic: "homeassistant/powerplug/tvbedroom/RESULT" 
+    value_template: "{{value_json.POWER2}}"
+    payload_on: "Power1 ON; Power2 ON"
+    payload_off: "Power1 OFF; Power2 OFF"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    qos: 1
+    retain: true 
+    
+#  - platform: mqtt
+#    name: "Fan"
+#    state_topic: stat/sonoff-bridge/RESULT
+#    value_template:  "{% if value_json.RfCode == '#4C7298' %} ON {% else %} OFF {% endif %}"
+#    state_on: "ON"
+#    state_off: "OFF"
+#    availability_topic: tele/sonoff-bridge/LWT
+#    command_topic: cmnd/sonoff-bridge/Backlog
+#    qos: 1
+#    payload_on: "RfSync 8700; RfLow 270; RfHigh 840; RfCode #4C7298"
+#    payload_off: "RfSync 8700; RfLow 270; RfHigh 840; RfCode #4C7294"
+#    payload_available: "Online"
+#    payload_not_available: "Offline"
+#    retain: false
+
+cover BlindsControl1:
+  # Varal Quintal
+  - platform: mqtt
+    name: "Varal Quintal"
+    command_topic: "homeassistant/cover/backyard/clothesline/set"
+    state_topic: "homeassistant/cover/backyard/clothesline/state"
+    payload_open: "0"
+    payload_close: "100"
+    payload_stop: "56"
+    state_open: "0"
+    state_closed: "100"
+    retain: false
+
+  # Cortina COPA 
+  - platform: mqtt
+    name: "Cortina Copa"
+    availability_topic: "homeassistant/light/diningroom/LWT"
+    command_topic: "homeassistant/light/diningroom/cmnd/Backlog" # OR "homeassistant/light/diningroom/cmnd/Backlog"
+    state_topic: "homeassistant/light/diningroom/RESULT" 
+    value_template: "{{value_json.DONE}}"
+    payload_open: "rfsend 61 10 25 1 302" #'RFsend {"data":61,"bits":10,"protocol":25,"repeat":10,"pulse":302}'      # {"value":61,"protocol":25,"length":10,"delay":302}
+    payload_stop: "rfsend 511 8 29 1 174" #"'RFsend {"data":511,"bits":8,"protocol":29,"repeat":10,"pulse":174}'      # {"value":511,"protocol":29,"length":8,"delay":174}
+    payload_close: "rfsend 5578 16 25 1 300" #'RFsend {"data":5578,"bits":16,"protocol":25,"repeat":10,"pulse":300}'   # {"value":5578,"protocol":25,"length":16,"delay":300}
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    qos: 1
+    #state_open: "0"
+    #state_closed: "100"
+    retain: false
+
+sensor:
+  - platform: command_line
+    name: CPU Temperature
+    command: "cat /sys/class/thermal/thermal_zone0/temp"
+    unit_of_measurement: "°C"
+    value_template: '{{ value | multiply(0.001) | round(1) }}'
+#  - platform: command_line
+#    name: GPU Temperature
+#    command: "/opt/vc/bin/vcgencmd measure_temp"
+#    unit_of_measurement: "°C"
+#    value_template: '{{ value | replace("temp=", "") | replace("''C", "") }}'  
+    
+#  - platform: mqtt
+#    name: encoder
+#    state_topic: "homeassistant/cover/backyard/clothesline/encoder"
+#    qos: 0
+
+#  - platform: template
+#    sensors:
+#      normalised_office_dimmer_brightness_256:
+#        value_template: '{{ states.sensor.dial/encoder.state | multiply (4) | round (0) }}'
+#        friendly_name: 'Encoder'
+
+#  - platform: mqtt
+#    name: "Last HA config backup"
+#    state_topic: "backup/HA"
+
+camera:
+  - platform: ffmpeg
+    name: Camera Garagem
+    input: !secret camera_url
+    scan_interval: 5
+
+#shell_command:  
+#  camera_down: curl -k "http://admin:admin@192.168.1.102/command=ptz_req&req=start&param=directiondown&channel=1&stream=1"
+#  camera_up: curl -k "http://admin:admin@192.168.1.102/command=ptz_req&req=start&param=directionup&channel=1&stream=1"
+#  camera_right: curl -k "http://admin:admin@192.168.1.102/command=ptz_req&req=start&param=directionright&channel=1&stream=1"
+#  camera_left: curl -k "http://admin:admin@192.168.1.102/command=ptz_req&req=start&param=directionleft&channel=1&stream=1"
+#  camera_stop_up: curl -k "http://admin:admin@192.168.1.102/command=ptz_req&req=stop&param=directionup&channel=1&stream=1"
+#  camera_stop_left: curl -k "http://admin:admin@192.168.1.102/command=ptz_req&req=stop&param=directionleft&channel=1&stream=1"
+#  camera_stop_right: curl -k "http://admin:admin@192.168.1.102/command=ptz_req&req=stop&param=directionright&channel=1&stream=1"
+#  camera_stop_down: curl -k "http://admin:admin@192.168.1.102/command=ptz_req&req=stop&param=directiondown&channel=1&stream=1"
+
+
+# Example configuration.yaml entry
+#group:
+#  watch_garmin:
+#      name: Vivoactive3Music
+#      entities:
+#      - light.fita_led_quarto
+#      - light.fita_led_sala
+#      - light.spots_copa
+#      - cover.varal_quintal 
+#      - light.spots_quintal
+      #- cover.cortina_copa
+
+#climate:
+#        name: Bedroom
+#        - platform: mqtt
+#            modes:
+#            - "off"
+#            - "cool"
+#            - "fan_only"
+#            swing_modes:
+#            - "on"
+#            - "off"
+#            fan_modes:
+#            - "high"
+#            - "medium"
+#             "low"
+#            availability_topic: "homeassistant/climate/bedroom/available"
+#            power_command_topic: "homeassistant/climate/bedroom/power/set"
+#            mode_command_topic: "homeassistant/climate/bedroom/mode/set"
+#            temperature_command_topic: "homeassistant/climate/bedroom/temperature/set"
+#            fan_mode_command_topic: "homeassistant/climate/bedroom/fan/set"
+#            swing_mode_command_topic: "homeassistant/climate/bedroom/swing/set"
+            
+
+
+########### NOT WORKING YET ##################
+
+  #- platform: mqtt
+  #  name: Climate TVroom
+  #  modes:
+  #    - "off"
+  #    - "cool"
+  #    - "fan_only"
+  #  swing_modes:
+  #    - "on"
+  #    - "off"
+  #  fan_modes:
+  #    - "high"
+  #    - "medium"
+  #    - "low"
+  #  availability_topic: "homeassistant/climate/tvroom/available"
+  #  power_command_topic: "homeassistant/climate/tvroom/power/set"
+  #  mode_command_topic: "homeassistant/climate/tvroom/mode/set"
+  #  temperature_command_topic: "homeassistant/climate/tvroom/temperature/set"
+  #  fan_mode_command_topic: "homeassistant/climate/tvroom/fan/set"
+  #  swing_mode_command_topic: "homeassistant/climate/tvroom/swing/set"

@@ -1,0 +1,10 @@
+watch_garmin:
+      name: Vivoactive3Music
+      entities:
+      - light.fita_led_quarto
+      - light.fita_led_sala
+      - light.spots_copa
+      - cover.varal_quintal 
+      - light.spots_quintal
+#      - cover.varal_quintal 
+#      - light.spots_quintal

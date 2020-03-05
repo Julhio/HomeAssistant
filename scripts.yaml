@@ -1,0 +1,90 @@
+#LG 49UJ6565 WEBOS 3.8.0
+# Example script integration containing script syntax
+#script: #scripts.yaml doesn't need inicialize with sintax 
+  left_button:
+    sequence:
+      - service: webostv.button
+        data:
+          entity_id:  media_player.tvsala
+          button: "LEFT"
+  right_button:
+    sequence:
+      - service: webostv.button
+        data:
+          entity_id:  media_player.tvsala
+          button: "RIGHT"
+  down_button:
+    sequence:
+      - service: webostv.button
+        data:
+          entity_id:  media_player.tvsala
+          button: "DOWN"
+  up_button:
+    sequence:
+      - service: webostv.button
+        data:
+          entity_id:  media_player.tvsala
+          button: "UP"
+  home_button:
+    sequence:
+      - service: webostv.button
+        data:
+          entity_id:  media_player.tvsala
+          button: "HOME"
+  back_button:
+    sequence:
+      - service: webostv.button
+        data:
+          entity_id:  media_player.tvsala
+          button: "BACK"
+  enter_button:
+    sequence:
+      - service: webostv.button
+        data:
+          entity_id:  media_player.tvsala
+          button: "ENTER"
+  volumeup_button:
+    sequence:
+      - service: webostv.button
+        data:
+          entity_id:  media_player.tvsala
+          button: "VOLUMEUP"
+  volumedown_button:
+    sequence:
+      - service: webostv.button
+        data:
+          entity_id:  media_player.tvsala
+          button: "VOLUMEDOWN"
+  rewind_command:
+    sequence:
+      - service: webostv.command
+        data:
+          entity_id:  media_player.tvsala
+          command: "media.controls/rewind"
+  play_command:
+    sequence:
+      - service: webostv.command
+        data:
+          entity_id:  media_player.tvsala
+          command: "media.controls/play"
+    #- service: notify.notify
+        #data:
+          #message: 'Turned on the ceiling light!'
+
+
+#SET_MUTE = "audio/setMute"
+#VOLUME_UP = "audio/volumeUp"
+#VOLUME_DOWN = "audio/volumeDown"
+#LAUNCH_APP = "com.webos.applicationManager/launch"
+#MEDIA_PLAY = "media.controls/play"
+#MEDIA_STOP = "media.controls/stop"
+#MEDIA_PAUSE = "media.controls/pause"
+#MEDIA_REWIND = "media.controls/rewind"
+#MEDIA_FAST_FORWARD = "media.controls/fastForward"
+#MEDIA_CLOSE = "media.viewer/close"
+#POWER_OFF = "system/turnOff"
+#POWER_ON = "system/turnOn"
+#TV_CHANNEL_DOWN = "tv/channelDown"
+#TV_CHANNEL_UP = "tv/channelUp"
+#SET_INPUT = "tv/switchInput"
+#CHANGE_SOUND_OUTPUT = "com.webos.service.apiadapter/audio/changeSoundOutput"
